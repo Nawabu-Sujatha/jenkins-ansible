@@ -1,0 +1,21 @@
+- name: Build & Deploy Docker Container
+  hosts: dockerhosts
+  gather_facts: false
+  remote_user: root@172.31.17.223
+  tasks:
+    - name: Copy the files to remote server
+      shell: scp -r /var/lib/jenkins/workspace/jenkins-ansible/ root@172.31.17.223:~/project/
+    - name: Building Docker Image
+      Docker_image:
+        name: mico:latest
+        Build:
+          source: build
+          path: ~/project/
+          state: present
+
+      -name: Creating the container
+      docker_container:
+        name: mico:container
+        image: mico:latest
+        ports:
+          - "80:80"
